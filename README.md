@@ -1,2 +1,2 @@
-# PassFort  
+# PassFort
 Password manager mobile app.
