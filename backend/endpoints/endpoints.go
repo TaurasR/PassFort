@@ -54,3 +54,7 @@ func LoginUser(db *sql.DB) gin.HandlerFunc {
 func Register(db *sql.DB) gin.HandlerFunc {
 	return userManagement.RegisterUser(db)
 }
+
+func DebugUsers(db *sql.DB) gin.HandlerFunc {
+	return userManagement.FetchUsers(db)
+}
