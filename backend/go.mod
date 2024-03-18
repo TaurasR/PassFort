@@ -2,7 +2,10 @@ module main
 
 go 1.19
 
-require github.com/gin-gonic/gin v1.9.1
+require (
+	github.com/gin-gonic/gin v1.9.1
+	github.com/mattn/go-sqlite3 v1.14.22
+)
 
 require (
 	github.com/bytedance/sonic v1.10.2 // indirect
