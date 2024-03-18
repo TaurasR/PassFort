@@ -7,12 +7,15 @@ import (
 
 	"main/userManagement"
 
+	"strconv"
+
 	"github.com/gin-gonic/gin"
 )
 
 type LoginCredentials struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
+	BioAuth  bool   `json:"bioauth"`
 }
 
 func GetPasswords(c *gin.Context) {
@@ -32,6 +35,7 @@ func LoginUser(db *sql.DB) gin.HandlerFunc {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
 			return
 		}
+
 		//Implement user fetch from database
 		user, err := userManagement.GetUserData(db, creds.Username)
 		if err != nil {
@@ -40,13 +44,23 @@ func LoginUser(db *sql.DB) gin.HandlerFunc {
 		}
 
 		if userManagement.CheckPasswordMatchLogin(creds.Password, user.PasswordHashed) {
-			c.JSON(http.StatusOK, gin.H{"token": "token"})
+			if creds.BioAuth {
+				c.JSON(http.StatusOK, gin.H{"token": "token"})
+				// token := GenerateJWT(user) // This needs implementation
+				// c.JSON(http.StatusOK, gin.H{"token": token})
+			} else {
+				//call email verification
+				userManagement.SendVerificationCode(user.Email, db)
+				c.JSON(http.StatusUnauthorized, gin.H{
+					"error": "Biometric authentication failed. Sending verification code.",
+					"id":    strconv.Itoa(user.Id),
+				})
+			}
 			return
 		} else {
 			return
 		}
-		// token := GenerateJWT(user) // This needs implementation
-		// c.JSON(http.StatusOK, gin.H{"token": token})
+
 	}
 
 }
@@ -57,4 +71,8 @@ func Register(db *sql.DB) gin.HandlerFunc {
 
 func DebugUsers(db *sql.DB) gin.HandlerFunc {
 	return userManagement.FetchUsers(db)
+}
+
+func VerifyAuthentication(db *sql.DB) gin.HandlerFunc {
+	return userManagement.VerifyCode(db)
 }
