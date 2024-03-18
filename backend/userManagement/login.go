@@ -11,11 +11,11 @@ import (
 
 type User struct {
 	Id             int
-	Username       string
-	PasswordHashed string
-	Name           string
-	Surname        string
-	Email          string
+	Username       string `json:"username" binding:"required"`
+	PasswordHashed string `json:"password" binding:"required"`
+	Name           string `json:"name" binding:"required"`
+	Surname        string `json:"surname" binding:"required"`
+	Email          string `json:"email" binding:"required"`
 }
 
 func GetUserData(db *sql.DB, username string) (*User, error) {

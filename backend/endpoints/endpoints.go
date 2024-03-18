@@ -27,7 +27,8 @@ func LoginUser(db *sql.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var creds LoginCredentials
 
-		if err := c.ShouldBindJSON(creds); err != nil {
+		if err := c.ShouldBindJSON(&creds); err != nil {
+			log.Printf("Error occurred: %v", err)
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
 			return
 		}
@@ -50,12 +51,6 @@ func LoginUser(db *sql.DB) gin.HandlerFunc {
 
 }
 
-func RegisterUser(db *sql.DB) gin.HandlerFunc {
-	return func(c *gin.Context) {
-
-	}
-}
-
-func AuthenticateLogin(c *gin.Context) {
-	// Logic to authenticate the user
+func Register(db *sql.DB) gin.HandlerFunc {
+	return userManagement.RegisterUser(db)
 }

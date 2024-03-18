@@ -15,7 +15,7 @@ import (
 
 func main() {
 
-	db, err := sql.Open("sqlite3", "backend/db/passfort.db") //open db connection
+	db, err := sql.Open("sqlite3", "../../db/passfort.db") //open db connection
 	if err != nil {
 		log.Fatal("Error opening database: ", err)
 	}
@@ -29,7 +29,7 @@ func main() {
 	})
 
 	r.POST("/login", endpoints.LoginUser(db))
-	r.POST("/register", endpoints.RegisterUser(db))
+	r.POST("/register", endpoints.Register(db))
 
 	r.Run() // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
 }
