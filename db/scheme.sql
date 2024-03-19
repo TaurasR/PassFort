@@ -16,3 +16,13 @@ CREATE TABLE saved_passwords (
     name TEXT NOT NULL, -- Name/description for this password entry
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
+
+CREATE TABLE user_codes (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    code TEXT NOT NULL,
+    expires_at DATETIME NOT NULL,
+    used BOOLEAN DEFAULT FALSE, -- To mark if the code has been used
+
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
