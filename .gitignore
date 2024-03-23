@@ -1,1 +1,8 @@
 *.db
+
+frontend/.dart_tool
+frontend/build
+
+frontend/pubspec.lock
+frontend/.flutter-plugins
+frontend/.flutter-plugins-dependencies
