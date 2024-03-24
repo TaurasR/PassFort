@@ -50,7 +50,7 @@ func LoginUser(db *sql.DB) gin.HandlerFunc {
 				// c.JSON(http.StatusOK, gin.H{"token": token})
 			} else {
 				//call email verification
-				userManagement.SendVerificationCode(user.Email, db)
+				// userManagement.SendVerificationCode(user.Email, db) // We could work around this
 				c.JSON(http.StatusUnauthorized, gin.H{
 					"error": "Biometric authentication failed. Sending verification code.",
 					"id":    strconv.Itoa(user.Id),
@@ -73,6 +73,10 @@ func DebugUsers(db *sql.DB) gin.HandlerFunc {
 	return userManagement.FetchUsers(db)
 }
 
-func VerifyAuthentication(db *sql.DB) gin.HandlerFunc {
+func SendVerificationCode(db *sql.DB) gin.HandlerFunc {
+	return userManagement.SendVerificationCode(db)
+}
+
+func VerifyVerificationCode(db *sql.DB) gin.HandlerFunc {
 	return userManagement.VerifyCode(db)
 }

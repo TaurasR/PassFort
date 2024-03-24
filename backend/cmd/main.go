@@ -31,7 +31,8 @@ func main() {
 	r.POST("/login", endpoints.LoginUser(db))
 	r.POST("/register", endpoints.Register(db))
 	r.GET("/debuggingusers", endpoints.DebugUsers(db))
-	r.POST("/verifyauth", endpoints.VerifyAuthentication(db))
+	r.POST("/sendcode", endpoints.SendVerificationCode(db))
+	r.POST("/checkcode", endpoints.VerifyVerificationCode(db))
 
 	r.Run() // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
 }

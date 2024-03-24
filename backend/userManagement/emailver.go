@@ -1,9 +1,8 @@
 package userManagement
 
 import (
-	"crypto/rand"
 	"database/sql"
-	"encoding/base64"
+	"fmt"
 	"log"
 	"net/http"
 	"strconv"
@@ -11,74 +10,113 @@ import (
 
 	"net/smtp"
 
+	"math/rand/v2"
+
 	"github.com/gin-gonic/gin"
+	"github.com/jordan-wright/email"
 )
 
-func GenerateVerificationCode() (string, error) {
-	randomBytes := make([]byte, 6) // Adjust size as needed
-	_, err := rand.Read(randomBytes)
-	if err != nil {
-		return "", err
-	}
-	return base64.URLEncoding.EncodeToString(randomBytes), nil
+const (
+	smtpAuthAddress = "smtp.gmail.com"
+	smtpServerAddress = "smtp.gmail.com:587"
+)
+
+type EmailSender interface {
+	SendEmail(
+		subject string,
+		content string,
+		to []string,
+	) error
 }
 
-func SendEmail(userEmail string, code string) {
-	from := "my_email@gmail.com"
-	password := "super_secret_password"
-	to := []string{"recipient@email.com"}
-	smtpHost := "smtp.gmail.com"
-	smtpPort := "587"
+type GmailSender struct {
+	name              string
+	fromEmailAddress  string
+	fromEmailPassword string
+}
 
-	emailBody := "Hello! Thank you for using our app! Authentication code: " + code
-	message := []byte("Subject: Your Verification Code\n" +
-		"From: " + from + "\n" +
-		"To: " + userEmail + "\n\n" +
-		emailBody)
-
-	// Create authentication
-	auth := smtp.PlainAuth("", from, password, smtpHost)
-
-	// Send actual message
-	err := smtp.SendMail(smtpHost+":"+smtpPort, auth, from, to, message)
-	if err != nil {
-		log.Fatal(err)
+func NewGmailSender(name string, fromEmailAddress string, fromEmailPassword string) EmailSender {
+	return &GmailSender {
+		name:              name,
+		fromEmailAddress:  fromEmailAddress,
+		fromEmailPassword: fromEmailPassword,
 	}
 }
 
-func SendVerificationCode(userEmail string, db *sql.DB) {
-	code, err := GenerateVerificationCode()
-	if err != nil {
-		log.Printf("Error generating verification code: %v", err)
-		return
+func (sender *GmailSender) SendEmail(subject string, content string, to []string) error {
+	e := email.NewEmail()
+	e.From = fmt.Sprintf("%s <%s>", sender.name, sender.fromEmailAddress)
+	e.Subject = subject
+	e.HTML = []byte(content)
+	e.To = to
+
+	smtpAuth := smtp.PlainAuth("", sender.fromEmailAddress, sender.fromEmailPassword, smtpAuthAddress)
+	return e.Send(smtpServerAddress, smtpAuth)
+}
+
+func GenerateVerificationCode() (string) {
+	var code = ""
+	n := 10
+	for i := 0; i < 6; i++ {
+		value := rand.IntN(n)
+
+		code = code + strconv.Itoa(value)
 	}
 
-	expiration := time.Now().Add(10 * time.Minute)
-	// Fetch user ID based on email
-	var userID int
-	err = db.QueryRow("SELECT id FROM users WHERE email = ?", userEmail).Scan(&userID)
-	if err != nil {
-		log.Printf("Error fetching user ID for email %s: %v", userEmail, err)
-		return
-	}
+	return code
+}
 
-	// Store code and expiration in the database associated with the user's ID
-	_, err = db.Exec("INSERT INTO user_codes (user_id, code, expires_at, used) VALUES (?, ?, ?, ?)",
-		userID, code, expiration, false)
-	if err != nil {
-		log.Printf("Error saving verification code for user %d: %v", userID, err)
-		return
-	}
+// Send verification code
+func SendVerificationCode(db *sql.DB) gin.HandlerFunc {
+	return func(c *gin.Context){
+		code := GenerateVerificationCode()
 
-	// Send the code via email
-	SendEmail(userEmail, code) // Implement email sending logic
+		var input struct {
+			Email string `json:"email"`
+		}
+		if err := c.ShouldBindJSON(&input); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
+			return
+		}
+	
+		expiration := time.Now().Add(10 * time.Minute)
+		var userID int
+		var err = db.QueryRow("SELECT id FROM users WHERE email = ?", input.Email).Scan(&userID)
+		if err != nil {
+			log.Printf("Error fetching user ID for email %s: %v", input.Email, err)
+			return
+		}
+	
+		// Store code and expiration in the database associated with the user's ID
+		_, err = db.Exec("INSERT INTO user_codes (user_id, code, expires_at, used) VALUES (?, ?, ?, ?)",
+			userID, code, expiration, false)
+		if err != nil {
+			log.Printf("Error saving verification code for user %d: %v", userID, err)
+			return
+		}
+	
+		// Send the code via email
+		sender := NewGmailSender("PassFort", "passfortprogram@gmail.com", "oqlvkbtisvfimnpu")
+
+		subject := "[PassFort] Elektroninio pašto patvirtinimas"
+		content := fmt.Sprintf(`
+		<h2>Elektroninio pašto patvirtinimas</h2>
+		<p>Įveskite kodą į telefoną.</p>
+		<p>Jūsų kodas yra: <strong>%s</strong></p>
+		`, code)
+
+		to := []string{input.Email}
+
+		sender.SendEmail(subject, content, to)
+		c.JSON(http.StatusOK, gin.H{"message": "Email sent successfully"})
+	}
 }
 
 // VerifyCode is a handler for verifying the code submitted by the user
 func VerifyCode(db *sql.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var input struct {
-			UserID string `json:"userId"`
+			Email  string `json:"email"`
 			Code   string `json:"code"`
 		}
 		if err := c.BindJSON(&input); err != nil {
@@ -86,12 +124,8 @@ func VerifyCode(db *sql.DB) gin.HandlerFunc {
 			return
 		}
 
-		// Convert userID from string to int
-		userID, err := strconv.Atoi(input.UserID)
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid userID"})
-			return
-		}
+		var userID int
+		var err = db.QueryRow("SELECT id FROM users WHERE email = ?", input.Email).Scan(&userID)
 
 		var userCode string
 		var expire time.Time
@@ -108,5 +142,4 @@ func VerifyCode(db *sql.DB) gin.HandlerFunc {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid or expired code"})
 		}
 	}
-
 }
