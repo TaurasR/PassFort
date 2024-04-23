@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-
 import 'package:passfort/views/logins/login_credentials_view.dart';
 import 'package:passfort/views/register_view.dart';
-
 import 'package:passfort/assets/widgets/page_background.dart';
 import 'package:passfort/assets/widgets/button_wide.dart';
 

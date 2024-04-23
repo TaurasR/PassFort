@@ -1,17 +1,15 @@
 import 'package:flutter/material.dart';
-
 import 'package:email_validator/email_validator.dart';
-
-import 'package:passfort/models/user_registration.dart';
+import 'package:passfort/classes/user.dart';
 import 'package:passfort/assets/functions.dart';
 
 class RegisterController {
-  UserReg _user;
+  User _user;
 
   RegisterController(this._user);
-  RegisterController.empty() : _user = const UserReg.empty();
+  RegisterController.empty() : _user = const User.empty();
 
-  void updateUser(UserReg user) {
+  void updateUser(User user) {
     _user = user;
   }
 

@@ -1,19 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
 import 'package:passfort/views/logins/login_auth_view.dart';
 import 'package:passfort/views/logins/login_default_view.dart';
-
 import 'package:passfort/controllers/login_controller.dart';
 
 void main() {
-  runApp(MainApp());
+  runApp(const MainApp());
 }
 
 class MainApp extends StatefulWidget {
-  MainApp({super.key});
-
-  final LoginController loginController = LoginController();
+  const MainApp({super.key});
 
   @override
   State<MainApp> createState() => _MainApp();
@@ -25,11 +21,13 @@ class _MainApp extends State<MainApp> {
   @override
   void initState() {
     super.initState();
-    widget.loginController.hasUserPreviouslyLoggedIn().then((value) {
-      setState(() {
-        _hasUserPreviouslyLoggedIn = value;
-      });
-    });
+    LoginController.hasUserPreviouslyLoggedIn().then(
+      (value) {
+        setState(() {
+          _hasUserPreviouslyLoggedIn = value;
+        });
+      },
+    );
   }
 
   @override

@@ -7,7 +7,7 @@ class EmailController {
 
   Future<void> createUserIDFile() async {
     final directory = await getApplicationDocumentsDirectory();
-    File file = File('${directory.path}/${constants.userIDFilename}');
+    File file = File('${directory.path}/${constants.userFilename}');
     file.writeAsString('1');
   }
 }

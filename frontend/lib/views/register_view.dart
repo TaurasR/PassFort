@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-
 import 'package:passfort/views/email_view.dart';
-
 import 'package:passfort/controllers/register_controller.dart';
-
 import 'package:passfort/assets/widgets/page_background.dart';
 import 'package:passfort/assets/widgets/button_wide.dart';
 import 'package:passfort/assets/widgets/text_field_custom.dart';
@@ -72,7 +69,6 @@ class _RegisterView extends State<RegisterView> {
                 const SizedBox(height: 10),
                 TextFieldCustom(
                     descText: 'Elektroninis paštas',
-                    hintText: 'abc@def.gh',
                     controller: emailController),
                 const SizedBox(height: 10),
                 TextFieldCustom(
