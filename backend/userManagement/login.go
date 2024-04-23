@@ -16,13 +16,13 @@ type User struct {
 	Name           string `json:"name" binding:"required"`
 	Surname        string `json:"surname" binding:"required"`
 	Email          string `json:"email" binding:"required"`
+	DecryptionKey  string `json:"decryption_key" binding:"required"`
 }
 
 func GetUserData(db *sql.DB, username string) (*User, error) {
-
 	var user User
 
-	err := db.QueryRow("SELECT id, username, password FROM users WHERE username = ?", username).Scan(&user.Id, &user.Username, &user.PasswordHashed)
+	err := db.QueryRow("SELECT id, username, password, decryption_key FROM users WHERE username = ?", username).Scan(&user.Id, &user.Username, &user.PasswordHashed, &user.DecryptionKey)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			log.Fatal("The user doesn't exist in the database")
