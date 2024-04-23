@@ -4,7 +4,11 @@ PassFort is a secure and user-friendly password manager application designed to 
 # Features
 
 Secure Storage: Passfort ensures the secure storage of passwords and sensitive information using encryption techniques to protect user data.
+
 Cross-Platform: Built with Flutter, PassFort offers a seamless user experience across multiple platforms, including Android, iOS, and web.
+
 Password Generation: Passfort includes a password generator tool to create strong and unique passwords for users.
+
 Biometric Authentication: Support for biometric authentication methods, such as fingerprint and face recognition, to enhance security and user convenience.
+
 Backup and Sync: PassFort allows users to backup and sync their encrypted data across devices securely.
