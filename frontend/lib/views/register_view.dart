@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:passfort/views/email_view.dart';
+import 'package:passfort/assets/database_operations.dart';
+import 'package:passfort/assets/functions.dart';
 import 'package:passfort/controllers/register_controller.dart';
 import 'package:passfort/assets/widgets/page_background.dart';
 import 'package:passfort/assets/widgets/button_wide.dart';
 import 'package:passfort/assets/widgets/text_field_custom.dart';
+import 'package:passfort/classes/user.dart';
 
 class RegisterView extends StatefulWidget {
   const RegisterView({super.key});
@@ -80,43 +82,40 @@ class _RegisterView extends State<RegisterView> {
                 Center(
                   child: ButtonWide(
                     text: 'Prisiregistruoti',
-                    onPressed: () {
-                      // UserReg user = UserReg(
-                      //   nameController.text,
-                      //   lastNameController.text,
-                      //   usernameController.text,
-                      //   emailController.text,
-                      //   passwordController.text,
-                      // );
-                      // registerController.updateUser(user);
+                    onPressed: () async {
+                      nameController.text = 'Justas';
+                      lastNameController.text = 'J';
+                      usernameController.text = 'Justas';
+                      emailController.text = 'justasjjustas@gmail.com';
+                      passwordController.text = 'justas123';
 
-                      // int status = registerController.getUserInfoStatus();
-                      // if (status != 0) {
-                      //   registerController.showError(context, status);
-                      // } else {
-                      //   Navigator.push(
-                      //     context,
-                      //     MaterialPageRoute(
-                      //       builder: (context) => EmailConfirmationView(
-                      //         authentification: false,
-                      //         createUserIDFile: false,
-                      //         goRouteBeginning: true,
-                      //         registerUser: true,
-                      //         user: user,
-                      //       ),
-                      //     ),
-                      //   );
-                      // }
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const EmailConfirmationView(
-                            authentification: false,
-                            createUserIDFile: false,
-                            goRouteBeginning: true,
-                          ),
-                        ),
+                      User user = User(
+                        -1, // Does not matter
+                        nameController.text,
+                        lastNameController.text,
+                        usernameController.text,
+                        emailController.text,
+                        passwordController.text,
+                        usernameController
+                            .text, // Decryption key same as username
                       );
+                      registerController.updateUser(user);
+
+                      int status = registerController.getUserInfoStatus();
+                      if (status != 0) {
+                        registerController.showError(context, status);
+                      } else {
+                        final response =
+                            await DatabaseOperations.insertUser(user);
+                        if (response.statusCode == 200 && context.mounted) {
+                          await showAlertDialogAsync(
+                              context, 'Registracija sėkminga!');
+                          if (context.mounted) {
+                            Navigator.of(context)
+                                .popUntil((route) => route.isFirst);
+                          }
+                        }
+                      }
                     },
                   ),
                 ),

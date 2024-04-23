@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:passfort/models/user_registration.dart';
+import 'package:passfort/classes/user.dart';
 // import 'dart:convert';
 // import 'package:http/http.dart' as http;
 
@@ -14,7 +14,7 @@ class EmailConfirmationView extends StatefulWidget {
   final bool createUserIDFile;
   final bool goRouteBeginning;
   final bool registerUser;
-  final UserReg user;
+  final User user;
 
   const EmailConfirmationView({
     super.key,
@@ -22,7 +22,7 @@ class EmailConfirmationView extends StatefulWidget {
     required this.createUserIDFile,
     this.goRouteBeginning = false,
     this.registerUser = false,
-    this.user = const UserReg.empty(),
+    this.user = const User.empty(),
   });
 
   @override

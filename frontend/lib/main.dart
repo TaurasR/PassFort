@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:passfort/views/logins/login_auth_view.dart';
 import 'package:passfort/views/logins/login_default_view.dart';
 import 'package:passfort/controllers/login_controller.dart';
+import 'package:passfort/views/main_view.dart';
 
 void main() {
   runApp(const MainApp());
@@ -39,9 +40,10 @@ class _MainApp extends State<MainApp> {
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
       ),
-      home: (_hasUserPreviouslyLoggedIn)
-          ? const LoginAuthenticationView()
-          : const LoginDefaultView(),
+      home: const MainView(),
+      // home: (_hasUserPreviouslyLoggedIn)
+      //     ? const LoginAuthenticationView()
+      //     : const LoginDefaultView(),
     );
   }
 }
