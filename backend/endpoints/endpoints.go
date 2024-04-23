@@ -7,6 +7,8 @@ import (
 
 	"main/userManagement"
 
+	"math/rand"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -16,12 +18,20 @@ type LoginCredentials struct {
 	BioAuth  bool   `json:"bioauth"`
 }
 
-func GetPasswords(c *gin.Context) {
-	// Logic to retrieve passwords
-}
-
 func CreatePassword(c *gin.Context) {
-	// Logic to create a new password
+	symbols := []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!@#$%^&*()_+")
+	password := make([]rune, 16)
+	for i := range password {
+		password[i] = symbols[rand.Intn(len(symbols))]
+	}
+
+	// Convert the password runes to a string
+	passwordStr := string(password)
+
+	// Send the generated password as a JSON response
+	c.JSON(http.StatusOK, gin.H{
+		"password": passwordStr,
+	})
 }
 
 type Password struct {
