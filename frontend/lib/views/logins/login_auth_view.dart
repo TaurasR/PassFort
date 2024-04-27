@@ -51,7 +51,7 @@ class LoginAuthenticationView extends StatelessWidget {
                 text: 'Piršto antspaudas',
                 icon: Icons.fingerprint,
                 onPressed: () async {
-                  if (await LoginController.authenticateWithFingerptint()) {
+                  if (await LoginController.authenticateWithFingerprint()) {
                     Navigator.push(
                       context,
                       MaterialPageRoute(

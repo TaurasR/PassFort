@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
-
-import 'package:passfort/views/email_view.dart';
+import 'package:passfort/assets/database_operations.dart';
 
 import 'package:passfort/assets/widgets/page_background.dart';
 import 'package:passfort/assets/widgets/button_wide.dart';
 import 'package:passfort/assets/widgets/text_field_custom.dart';
+import 'package:passfort/controllers/login_controller.dart';
+import 'package:passfort/views/email_view.dart';
 
 class LoginWithCredentialsView extends StatelessWidget {
   LoginWithCredentialsView({super.key});
 
+  LoginController loginController = LoginController.empty();
   final usernameController = TextEditingController();
   final passwordController = TextEditingController();
-  final emailController = TextEditingController();
-  // final emailContrl = EmailController();
 
   @override
   Widget build(BuildContext context) {
@@ -63,17 +63,37 @@ class LoginWithCredentialsView extends StatelessWidget {
                 const SizedBox(height: 50),
                 ButtonWide(
                   text: 'Prisijungti',
-                  onPressed: () {
-                    // emailContrl.createUserIDFile();
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const EmailConfirmationView(
-                          authentification: false,
-                          createUserIDFile: false,
-                        ),
-                      ),
-                    );
+                  onPressed: () async {
+                    usernameController.text = 'Justas';
+                    passwordController.text = 'justas123';
+                    loginController.setInfo(
+                        usernameController.text, passwordController.text);
+
+                    int status = loginController.getUserInfoStatus();
+                    if (status != 0) {
+                      loginController.showError(context, status);
+                    } else {
+                      bool authenticated =
+                          await LoginController.authenticateWithFingerprint();
+                      if (!authenticated) {
+                        if (context.mounted) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const EmailConfirmationView(
+                                  authentification: true,
+                                  createUserIDFile: false),
+                            ),
+                          );
+                        }
+                      }
+                    }
+
+                    // final response = await DatabaseOperations.checkCredentials(
+                    //     usernameController.text,
+                    //     passwordController.text,
+                    //     authenticated);
+                    // print(response.statusCode);
                   },
                 ),
                 const SizedBox(height: 20),

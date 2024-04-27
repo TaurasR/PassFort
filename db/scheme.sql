@@ -4,8 +4,8 @@ CREATE TABLE users (
     name TEXT NOT NULL,
     surname TEXT NOT NULL,
     password TEXT NOT NULL, -- Hashed password
-    email TEXT NOT NULL UNIQUE
-    decryption_key TEXT NOT NULL, -- Key to decrypt the passwords
+    email TEXT NOT NULL UNIQUE,
+    decryption_key TEXT NOT NULL -- Key to decrypt the passwords
 );
 
 CREATE TABLE saved_passwords (
