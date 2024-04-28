@@ -21,21 +21,21 @@ class LoginController {
     _password = password;
   }
 
-  static Future<bool> hasUserPreviouslyLoggedIn() async {
-    final directory = await getApplicationDocumentsDirectory();
-    final file = File('${directory.path}/${constants.userFilename}');
+  // static Future<bool> hasUserPreviouslyLoggedIn() async {
+  //   final directory = await getApplicationDocumentsDirectory();
+  //   final file = File('${directory.path}/${constants.userFilename}');
 
-    if (!file.existsSync()) {
-      return false;
-    }
+  //   if (!file.existsSync()) {
+  //     return false;
+  //   }
 
-    int? id = int.tryParse(file.readAsStringSync());
-    if (id == null) {
-      return false;
-    }
+  //   int? id = int.tryParse(file.readAsStringSync());
+  //   if (id == null) {
+  //     return false;
+  //   }
 
-    return true;
-  }
+  //   return true;
+  // }
 
   static Future<bool> authenticateWithFingerprint() async {
     bool authenticated = false;

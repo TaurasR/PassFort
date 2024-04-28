@@ -1,8 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:passfort/assets/widgets/page_background.dart';
+import 'package:passfort/controllers/main_controller.dart';
+import 'package:passfort/views/add_password.dart';
 
-class MainView extends StatelessWidget {
+class MainView extends StatefulWidget {
   const MainView({super.key});
+
+  @override
+  State<MainView> createState() => _MainView();
+}
+
+class _MainView extends State<MainView> {
+  MainController mainController = MainController();
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +60,7 @@ class MainView extends StatelessWidget {
                   ),
                   Expanded(
                     child: ListView.builder(
-                      itemCount: 20,
+                      itemCount: mainController.getPasswordsLength() + 5,
                       itemBuilder: (BuildContext context, int index) {
                         return GestureDetector(
                           onTap: () {
@@ -73,7 +82,12 @@ class MainView extends StatelessWidget {
           ),
         ),
         floatingActionButton: FloatingActionButton(
-          onPressed: () {},
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const AddPasswordView()),
+            );
+          },
           tooltip: 'Pridėti slaptažodį',
           child: const Icon(Icons.add),
         ),

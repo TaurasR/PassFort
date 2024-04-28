@@ -18,6 +18,25 @@ class User {
         _password = '',
         _decryptionKey = '';
 
+  User.fromJson(Map<String, dynamic> json)
+      : _id = json['id'],
+        _name = json['name'],
+        _password = json['password'],
+        _username = json['username'],
+        _lastName = json['surname'],
+        _decryptionKey = json['decryption_key'],
+        _email = json['email'];
+
+  Map<String, dynamic> toJson() => {
+        'id': _id,
+        'name': _name,
+        'surname': _lastName,
+        'password': _password,
+        'username': _username,
+        'email': _email,
+        'decryption_key': _decryptionKey
+      };
+
   int getID() {
     return _id;
   }

@@ -1,8 +1,8 @@
-import 'package:passfort/classes/password_json.dart';
+import 'package:passfort/classes/password.dart';
 
 class Login {
   int? _userID;
-  List<PasswordJSON>? _passwords;
+  List<Password>? _passwords;
 
   Login();
 
@@ -10,7 +10,7 @@ class Login {
     return _userID;
   }
 
-  List<PasswordJSON>? getPasswords() {
+  List<Password>? getPasswords() {
     return _passwords;
   }
 }

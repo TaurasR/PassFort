@@ -79,4 +79,18 @@ class DatabaseOperations {
       ),
     );
   }
+
+  static Future<http.Response> generatePassword() async {
+    return await http.get(
+      Uri(
+        scheme: constants.serverScheme,
+        host: constants.serverHost,
+        path: '/genereatepassword',
+        port: constants.serverPort,
+      ),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
+  }
 }

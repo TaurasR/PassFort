@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:passfort/classes/password.dart';
 
 void showAlertDialog(BuildContext context, String text) {
   showDialog(
@@ -40,4 +43,30 @@ Future<void> showAlertDialogAsync(BuildContext context, String text) async {
       );
     },
   );
+}
+
+String jsonEncodePasswords(List<Password> passwords) {
+  String text = '{"passwords": [';
+
+  for (int i = 0; i < passwords.length; i++) {
+    text += jsonEncode(passwords.elementAt(i).toJson());
+    if (i != passwords.length - 1) {
+      text += ',';
+    }
+  }
+  text += ']}';
+
+  return text;
+}
+
+List<Password> getPasswordsFromString(String data) {
+  final passwords = <Password>[];
+
+  final text = jsonDecode(data);
+  final List<dynamic> passwordsList = text['passwords'];
+  for (int i = 0; i < passwordsList.length; i++) {
+    passwords.add(Password.fromJson(jsonDecode(passwordsList.elementAt(i))));
+  }
+
+  return passwords;
 }
