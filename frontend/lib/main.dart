@@ -41,7 +41,7 @@ class _MainApp extends State<MainApp> {
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
       ),
-      home: const MainView(),
+      home: const LoginDefaultView(),
       // home: (_hasUserPreviouslyLoggedIn)
       //     ? const LoginAuthenticationView()
       //     : const LoginDefaultView(),

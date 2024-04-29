@@ -7,6 +7,10 @@ import 'package:passfort/assets/constants.dart' as constants;
 class DatabaseOperations {
   const DatabaseOperations();
 
+  static String hashPassword(String password) {
+    return sha256.convert(utf8.encode(password)).toString();
+  }
+
   static String _hashPassword(String password) {
     return sha256.convert(utf8.encode(password)).toString();
   }

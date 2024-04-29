@@ -39,6 +39,11 @@ class _RegisterView extends State<RegisterView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Atgal'),
+        backgroundColor: const Color.fromARGB(255, 35, 128, 77),
+        foregroundColor: Colors.white,
+      ),
       resizeToAvoidBottomInset: false,
       body: PageBackground(
         child: InkWell(
@@ -51,7 +56,7 @@ class _RegisterView extends State<RegisterView> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 50),
+                const SizedBox(height: 10),
                 const Center(
                   child: Text(
                     'Registracija',
@@ -86,19 +91,14 @@ class _RegisterView extends State<RegisterView> {
                   child: ButtonWide(
                     text: 'Prisiregistruoti',
                     onPressed: () async {
-                      nameController.text = 'Justas';
-                      lastNameController.text = 'J';
-                      usernameController.text = 'Justas';
-                      emailController.text = 'justasjjustas@gmail.com';
-                      passwordController.text = 'justas123';
-
                       User user = User(
-                        -1, // Does not matter
+                        1, // Does not matter
                         nameController.text,
                         lastNameController.text,
                         usernameController.text,
                         emailController.text,
-                        passwordController.text,
+                        DatabaseOperations.hashPassword(
+                            passwordController.text),
                         usernameController
                             .text, // Decryption key same as username
                       );
@@ -108,27 +108,20 @@ class _RegisterView extends State<RegisterView> {
                       if (status != 0) {
                         registerController.showError(context, status);
                       } else {
-                        // await FileOperations.createFile('user.json');
-                        // await FileOperations.writeToFile(
-                        //     'user.json', jsonEncode(user.toJson()));
-                        // final res =
-                        //     await FileOperations.readFromFile('user.json');
-                        // User u = User.fromJson(jsonDecode(res));
-                        // print(u.getID());
-                        // print(u.getLastName());
-                        // print(u.getDecryptionKey());
+                        if (!await FileOperations.doesFileExist('user.json')) {
+                          await FileOperations.createUserFile();
+                        }
+                        await FileOperations.writeToUserFile(
+                            getPrettyJSONString(user.toJson()));
 
-                        // final response =
-                        //     await DatabaseOperations.insertUser(user);
-                        // print(response);
-                        // if (response.statusCode == 200 && context.mounted) {
-                        //   await showAlertDialogAsync(
-                        //       context, 'Registracija sėkminga!');
-                        //   if (context.mounted) {
-                        //     Navigator.of(context)
-                        //         .popUntil((route) => route.isFirst);
-                        //   }
-                        // }
+                        if (context.mounted) {
+                          await showAlertDialogAsync(
+                              context, 'Registracija sėkminga.');
+                        }
+
+                        if (context.mounted) {
+                          Navigator.pop(context);
+                        }
                       }
                     },
                   ),
