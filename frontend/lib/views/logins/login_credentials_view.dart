@@ -100,6 +100,7 @@ class LoginWithCredentialsView extends StatelessWidget {
                               context, 'Toks vartotojas neegzistuoja.');
                         }
                       } else {
+                        await FileOperations.createPasswordsFile();
                         if (context.mounted) {
                           Navigator.push(
                             context,
