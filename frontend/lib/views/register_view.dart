@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:passfort/assets/database_operations.dart';
+import 'package:passfort/assets/file_operations.dart';
 import 'package:passfort/assets/functions.dart';
 import 'package:passfort/controllers/register_controller.dart';
 import 'package:passfort/assets/widgets/page_background.dart';
@@ -105,16 +108,27 @@ class _RegisterView extends State<RegisterView> {
                       if (status != 0) {
                         registerController.showError(context, status);
                       } else {
-                        final response =
-                            await DatabaseOperations.insertUser(user);
-                        if (response.statusCode == 200 && context.mounted) {
-                          await showAlertDialogAsync(
-                              context, 'Registracija sėkminga!');
-                          if (context.mounted) {
-                            Navigator.of(context)
-                                .popUntil((route) => route.isFirst);
-                          }
-                        }
+                        // await FileOperations.createFile('user.json');
+                        // await FileOperations.writeToFile(
+                        //     'user.json', jsonEncode(user.toJson()));
+                        // final res =
+                        //     await FileOperations.readFromFile('user.json');
+                        // User u = User.fromJson(jsonDecode(res));
+                        // print(u.getID());
+                        // print(u.getLastName());
+                        // print(u.getDecryptionKey());
+
+                        // final response =
+                        //     await DatabaseOperations.insertUser(user);
+                        // print(response);
+                        // if (response.statusCode == 200 && context.mounted) {
+                        //   await showAlertDialogAsync(
+                        //       context, 'Registracija sėkminga!');
+                        //   if (context.mounted) {
+                        //     Navigator.of(context)
+                        //         .popUntil((route) => route.isFirst);
+                        //   }
+                        // }
                       }
                     },
                   ),
