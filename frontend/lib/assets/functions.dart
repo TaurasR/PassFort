@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:passfort/classes/password.dart';
 
@@ -64,9 +63,46 @@ List<Password> getPasswordsFromString(String data) {
 
   final text = jsonDecode(data);
   final List<dynamic> passwordsList = text['passwords'];
+
   for (int i = 0; i < passwordsList.length; i++) {
-    passwords.add(Password.fromJson(jsonDecode(passwordsList.elementAt(i))));
+    passwords.add(Password.fromJson(passwordsList[i]));
   }
 
   return passwords;
 }
+
+List<Password> addPassword(List<Password> passwords, Password password) {
+  passwords.add(password);
+  return passwords;
+}
+
+List<Password> removePassword(List<Password> passwords, int id) {
+  for (int i = 0; i < passwords.length; i++) {
+    if (passwords[i].getID() == id) {
+      passwords.removeAt(i);
+      break;
+    }
+  }
+  return passwords;
+}
+
+String getPrettyJSONString(Map<String, dynamic> jsonObject) {
+  var encoder = const JsonEncoder.withIndent('  ');
+  return encoder.convert(jsonObject);
+}
+
+// void main() async {
+//   final file = File('passwords.json');
+//   String data = await file.readAsString();
+
+//   List<Password> passwords = getPasswordsFromString(data);
+//   for (int i = 0; i < passwords.length; i++) {
+//     print(passwords[i].toString());
+//   }
+//   Password p = Password(0, 0, 'c', 'c', 'c', 'c');
+//   passwords = addPassword(passwords, p);
+
+//   String w = getPrettyJSONString(jsonDecode(jsonEncodePasswords(passwords)));
+
+//   file.writeAsString(w + '\n');
+// }

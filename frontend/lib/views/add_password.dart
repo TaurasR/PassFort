@@ -9,9 +9,13 @@ import 'package:passfort/assets/widgets/button_wide.dart';
 import 'package:passfort/assets/widgets/page_background.dart';
 import 'package:passfort/assets/widgets/text_field_custom.dart';
 import 'package:passfort/classes/password.dart';
+import 'package:passfort/views/main_view.dart';
 
 class AddPasswordView extends StatefulWidget {
-  const AddPasswordView({super.key});
+  const AddPasswordView({super.key, this.updateView = false, this.password});
+
+  final bool updateView;
+  final Password? password;
 
   @override
   State<AddPasswordView> createState() => _AddPasswordView();
@@ -27,11 +31,28 @@ class _AddPasswordView extends State<AddPasswordView> {
   TextEditingController passwordController = TextEditingController();
 
   @override
+  void initState() {
+    super.initState();
+    if (widget.updateView) {
+      setState(() {
+        nameController.text = widget.password!.getName();
+        usernameController.text = widget.password!.getUsername();
+        websiteController.text = widget.password!.getWebsite();
+        passwordController.text = widget.password!.getPassword();
+        showPassword = false;
+        localSave = true;
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
-        title: const Text('Naujo slaptažodžio pridėjimas'),
+        title: (widget.updateView)
+            ? const Text('Slaptažodžio atnaujinimas')
+            : const Text('Naujo slaptažodžio pridėjimas'),
         backgroundColor: const Color.fromARGB(255, 35, 128, 77),
         foregroundColor: Colors.white,
       ),
@@ -163,57 +184,82 @@ class _AddPasswordView extends State<AddPasswordView> {
                   height: 10,
                 ),
                 ButtonWide(
-                  text: 'Pridėti',
+                  text: (widget.updateView) ? 'Atnaujinti' : 'Pridėti',
                   onPressed: () async {
-                    // if (nameController.text.isEmpty) {
-                    //   showAlertDialog(
-                    //       context, 'Etiketės pavadinimas negali būti tuščias.');
-                    //   return;
-                    // }
-                    // if (usernameController.text.isEmpty) {
-                    //   showAlertDialog(
-                    //       context, 'Vartotojo vardas negali būti tuščias.');
-                    //   return;
-                    // }
-                    // if (websiteController.text.isEmpty) {
-                    //   showAlertDialog(context,
-                    //       'Svetainės pavadinimas negali būti tuščias.');
-                    //   return;
-                    // }
-                    // if (passwordController.text.isEmpty) {
-                    //   showAlertDialog(
-                    //       context, 'Slaptažodis negali būti tuščias.');
-                    //   return;
-                    // }
-                    Password password = Password(
-                        1,
-                        1,
-                        passwordController.text,
-                        usernameController.text,
-                        websiteController.text,
-                        nameController.text);
+                    if (nameController.text.isEmpty) {
+                      showAlertDialog(
+                          context, 'Etiketės pavadinimas negali būti tuščias.');
+                      return;
+                    }
+                    if (usernameController.text.isEmpty) {
+                      showAlertDialog(
+                          context, 'Vartotojo vardas negali būti tuščias.');
+                      return;
+                    }
+                    if (websiteController.text.isEmpty) {
+                      showAlertDialog(context,
+                          'Svetainės pavadinimas negali būti tuščias.');
+                      return;
+                    }
+                    if (passwordController.text.isEmpty) {
+                      showAlertDialog(
+                          context, 'Slaptažodis negali būti tuščias.');
+                      return;
+                    }
 
-                    // await FileOperations.createPasswordsFile();
-                    // await FileOperations.deleteFile('passwords.json');
-                    // await FileOperations.writeToFile(
-                    //     'passwords.json', jsonEncode(password.toJson()));
-                    // if (localSave) {}
-                    // final res = jsonDecode(
-                    // await FileOperations.readFromFile('passwords.json'));
-                    // print(res['passwords']);
-                    // print(await FileOperations.readFromFile('passwords.json'));
-                    // Navigator.pop(context);
+                    if (widget.updateView) {
+                      widget.password!.setName(nameController.text);
+                      widget.password!.setPassword(passwordController.text);
+                      widget.password!.setWebsite(websiteController.text);
+                      widget.password!.setUsername(usernameController.text);
 
-                    // const filename = 'user.json';
-                    // const data = {'user_id': 1};
-                    // await FileOperations.createFile(filename);
-                    // await FileOperations.writeToFile(
-                    //     filename, jsonEncode(data));
-                    // print(await FileOperations.doesFileExist(filename));
-                    // String data = await FileOperations.readFromFile(filename);
-                    // print(data);
-                    // await FileOperations.deleteFile(filename);
-                    // print(jsonDecode(data));
+                      String data =
+                          await FileOperations.readFromPasswordsFile();
+                      List<Password> passwords = getPasswordsFromString(data);
+
+                      passwords =
+                          removePassword(passwords, widget.password!.getID());
+
+                      passwords = addPassword(passwords, widget.password!);
+
+                      String prettyJSON = getPrettyJSONString(
+                          jsonDecode(jsonEncodePasswords(passwords)));
+
+                      await FileOperations.writeToPasswordsFile(prettyJSON);
+                    } else {
+                      if (localSave) {
+                        String data =
+                            await FileOperations.readFromPasswordsFile();
+                        List<Password> passwords = getPasswordsFromString(data);
+
+                        int id = (passwords.isEmpty)
+                            ? 1
+                            : passwords.last.getID() + 1;
+                        Password password = Password(
+                          id,
+                          1,
+                          passwordController.text,
+                          usernameController.text,
+                          websiteController.text,
+                          nameController.text,
+                        );
+
+                        passwords = addPassword(passwords, password);
+                        String prettyJSON = getPrettyJSONString(
+                            jsonDecode(jsonEncodePasswords(passwords)));
+
+                        await FileOperations.writeToPasswordsFile(prettyJSON);
+                      }
+                    }
+
+                    if (context.mounted) {
+                      // Navigator.pop(context);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const MainView()),
+                      );
+                    }
                   },
                 ),
               ],
