@@ -20,6 +20,9 @@ jobs:
       with:
         flutter-version: 3.19.5
 
+    - name: CD to correct directory
+      run: cd frontend
+
     - name: Get dependencies
       run: flutter pub get
 
