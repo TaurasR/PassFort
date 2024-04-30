@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"main/endpoints"
+	"main/userManagement"
 
 	"github.com/gin-gonic/gin"
 )
@@ -54,5 +55,18 @@ func TestCreatePassword(t *testing.T) {
 		t.Errorf("expected password length of 16, got %d", len(response.Password))
 	} else {
 		t.Log("PASSED: Password length is 16")
+	}
+}
+
+func TestGenerateUserKey(t *testing.T) {
+	username := "testuser"
+
+	key, err := userManagement.GenerateUserKey(username)
+	if err != nil {
+		t.Fatalf("generateUserKey returned an error: %v", err)
+	}
+
+	if len(key) != 32 {
+		t.Errorf("generateUserKey returned a key of incorrect length: got %v want %v", len(key), 32)
 	}
 }

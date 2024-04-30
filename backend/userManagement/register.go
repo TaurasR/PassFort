@@ -20,7 +20,7 @@ func hashPassword(password string) (string, error) {
 	return string(bytes), err
 }
 
-func generateUserKey(username string) ([]byte, error) {
+func GenerateUserKey(username string) ([]byte, error) {
 	// Generate a random salt for the user.
 	salt := make([]byte, 16)
 	_, err := rand.Read(salt)
@@ -52,7 +52,7 @@ func RegisterUser(db *sql.DB) gin.HandlerFunc {
 		}
 
 		//Generate user-key
-		key, err := generateUserKey(newUser.Username)
+		key, err := GenerateUserKey(newUser.Username)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate user key"})
 			return
