@@ -99,6 +99,21 @@ User getUserFromString(String data) {
   return User.fromJson(userObject);
 }
 
+Future<List<Password>> getAllPasswords(List<Password> localPasswords, List<Password> dbPasswords) async {
+  List<Password> allPasswords = [...localPasswords,...dbPasswords];
+  Map<int, Password> uniquePasswordsMap = {};
+
+  for (Password password in allPasswords) {
+    if (!uniquePasswordsMap.containsKey(password.getID())) {
+      uniquePasswordsMap[password.getID()] = password;
+    }
+  }
+  List<Password> uniquePasswords = uniquePasswordsMap.values.toList();
+
+  return uniquePasswords;
+}
+
+
 // void main() async {
 //   final file = File('passwords.json');
 //   String data = await file.readAsString();
