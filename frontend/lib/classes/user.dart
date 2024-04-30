@@ -36,6 +36,7 @@ class User {
         'email': _email,
         'decryption_key': _decryptionKey
       };
+      
 
   int getID() {
     return _id;

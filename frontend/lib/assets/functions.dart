@@ -1,6 +1,9 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:passfort/assets/file_operations.dart';
 import 'package:passfort/classes/password.dart';
+import 'package:passfort/classes/user.dart';
 
 void showAlertDialog(BuildContext context, String text) {
   showDialog(
@@ -91,14 +94,31 @@ String getPrettyJSONString(Map<String, dynamic> jsonObject) {
   return encoder.convert(jsonObject);
 }
 
+User getUserFromString(String data) {
+  final userObject = jsonDecode(data);
+  return User.fromJson(userObject);
+}
+
+Future<List<Password>> getAllPasswords(List<Password> localPasswords, List<Password> dbPasswords) async {
+  List<Password> allPasswords = [...localPasswords,...dbPasswords];
+  Map<int, Password> uniquePasswordsMap = {};
+
+  for (Password password in allPasswords) {
+    if (!uniquePasswordsMap.containsKey(password.getID())) {
+      uniquePasswordsMap[password.getID()] = password;
+    }
+  }
+  List<Password> uniquePasswords = uniquePasswordsMap.values.toList();
+
+  return uniquePasswords;
+}
+
+
 // void main() async {
 //   final file = File('passwords.json');
 //   String data = await file.readAsString();
 
 //   List<Password> passwords = getPasswordsFromString(data);
-//   for (int i = 0; i < passwords.length; i++) {
-//     print(passwords[i].toString());
-//   }
 //   Password p = Password(0, 0, 'c', 'c', 'c', 'c');
 //   passwords = addPassword(passwords, p);
 
@@ -106,3 +126,4 @@ String getPrettyJSONString(Map<String, dynamic> jsonObject) {
 
 //   file.writeAsString(w + '\n');
 // }
+
