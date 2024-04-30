@@ -111,8 +111,4 @@ User getUserFromString(String data) {
 
 //   file.writeAsString(w + '\n');
 // }
-void main() async {
-  await FileOperations.createUserFile();
-  getUserFromString('user.json');
 
-}
